@@ -9,45 +9,53 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import hh.swd20.bookstore.domain.Book;
 import hh.swd20.bookstore.domain.BookRepository;
+import hh.swd20.bookstore.domain.CategoryRepository;
 
 @Controller
 public class BookController {
 	
 	@Autowired
 	private BookRepository bookRepository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
 
 	@RequestMapping(value="/index")
 	public String index() {
 		return "index";
 	}
 	
+	/** Listaa kirjat tietokannasta **/
 	@RequestMapping(value="/booklist", method=RequestMethod.GET)
 	public String bookList(Model model) {
 		model.addAttribute("books", bookRepository.findAll());
 		return "booklist";
 	}
 	
+	/** Palauttaa tyhjän lomakkeen uuden kirjan lisäämiseen **/
 	@RequestMapping(value="/addbook")
 	  public String addBook(Model model){
 	    model.addAttribute("book", new Book());
+	    model.addAttribute("categorylist", categoryRepository.findAll());
 	       return "addbook";
 	  }     
-	    
+	/** Tallentaa lomakkeeseen tallennetut tiedot **/    
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	  public String save(Book book){
 		bookRepository.save(book);
 	    	return "redirect:booklist";
 	  }
-	
+	/** Poistaa valitulla id:llä olevan kirjan **/
 	@RequestMapping(value="/delete/{id}", method=RequestMethod.GET)
 	public String deleteBook(@PathVariable("id") Long bookId, Model model) {
 		bookRepository.deleteById(bookId);
 		return "redirect:../booklist";
 	}
-	
+	/** Editoi/muuttaa valitulla id:llä olevaa kirjaa **/
 	@RequestMapping(value="/edit/{id}")
 	public String editBook(@PathVariable("id") Long bookId, Model model) {
 		model.addAttribute("book", bookRepository.findById(bookId));
+		model.addAttribute("categorylist", categoryRepository.findAll());
 		return "editbook";
 	}
 }
