@@ -2,7 +2,6 @@ package hh.swd20.bookstore.domain;
 
 import javax.persistence.*;
 
-
 @Entity
 public class User {
 	
